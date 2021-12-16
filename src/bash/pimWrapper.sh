@@ -47,7 +47,7 @@ function loadKieServerConfigs()
 
     KieServerPwd=${!KieServerPwdEnv}
     
-    echo -n "-Dkieserver.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieserver.${KIE_SERVER_INDEX}.<parametro>=${KieServerUser} -Dkieserver.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
+    echo -n "-Dkieserver.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieserver.${KIE_SERVER_INDEX}.username=${KieServerUser} -Dkieserver.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
 }
 
 if [[ -z "${KIE_SERVER_IMPORT_LIST}" ]] ; then
