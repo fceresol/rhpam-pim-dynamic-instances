@@ -7,7 +7,7 @@ source ${LAUNCH_DIR}/logging.sh
 
 
 # required vars
-# KIE_SERVER_IMPORT
+# KIE_SERVER_IMPORT_LIST
 
 #
 function loadKieServerConfigs()
@@ -50,10 +50,10 @@ function loadKieServerConfigs()
     echo -n "-Dkieserver.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieserver.${KIE_SERVER_INDEX}.<parametro>=${KieServerUser} -Dkieserver.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
 }
 
-if [[ -z "${KIE_SERVER_IMPORT}" ]] ; then
-    log_warning "no KIE_SERVER_IMPORT var specified, skipping..."
+if [[ -z "${KIE_SERVER_IMPORT_LIST}" ]] ; then
+    log_warning "no KIE_SERVER_IMPORT_LIST var specified, skipping..."
 else
-    ServerList=$((echo -n ${KIE_SERVER_IMPORT} | tr "-" "_" | tr "[a-z]" "[A-Z]"))
+    ServerList=$((echo -n ${KIE_SERVER_IMPORT_LIST} | tr "-" "_" | tr "[a-z]" "[A-Z]"))
 
     if [[ "${ServerList}" =~ .*ALL.* ]]; then
 
