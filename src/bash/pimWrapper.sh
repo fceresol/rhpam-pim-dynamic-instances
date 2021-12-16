@@ -76,6 +76,6 @@ else
     log_info "Auto-configured for: ${ServerList}"
 fi
 
-export JBOSS_KIE_ARGS="${JBOSS_KIE_ARGS} ${JavaParameters}"
+export JBOSS_KIE_EXTRA_CONFIG="${JBOSS_KIE_EXTRA_CONFIG} ${JavaParameters}"
 
 /opt/rhpam-process-migration/openshift-launch.sh
