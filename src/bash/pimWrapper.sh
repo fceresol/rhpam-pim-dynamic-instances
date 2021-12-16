@@ -74,6 +74,11 @@ else
     done
 
     log_info "Auto-configured for: ${ServerList}"
+
+    log_info "removing kie-servers configured by the operator...."
+
+    cat  ${JBOSS_KIE_EXTRA_CONFIG} | sed  -n '/thorntail:/,$p' > /tmp/thorntail_only_config.yaml
+    export JBOSS_KIE_EXTRA_CONFIG=/tmp/thorntail_only_config.yaml
 fi
 
 export JBOSS_KIE_EXTRA_CONFIG="${JBOSS_KIE_EXTRA_CONFIG} ${JavaParameters}"
