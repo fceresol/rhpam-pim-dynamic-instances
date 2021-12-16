@@ -47,7 +47,7 @@ function loadKieServerConfigs()
 
     KieServerPwd=${!KieServerPwdEnv}
     
-    echo -n "-Dkieserver.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieserver.${KIE_SERVER_INDEX}.username=${KieServerUser} -Dkieserver.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
+    echo -n "-Dkieservers.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieservers.${KIE_SERVER_INDEX}.username=${KieServerUser} -Dkieservers.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
 }
 
 if [[ -z "${KIE_SERVER_IMPORT_LIST}" ]] ; then
@@ -78,7 +78,7 @@ else
     log_info "removing kie-servers configured by the operator...."
 
     cat  ${JBOSS_KIE_EXTRA_CONFIG} | sed  -n '/thorntail:/,$p' > /tmp/thorntail_only_config.yaml
-    export JBOSS_KIE_EXTRA_CONFIG=/tmp/thorntail_only_config.yaml
+   # export JBOSS_KIE_EXTRA_CONFIG=/tmp/thorntail_only_config.yaml
 fi
 
 export JBOSS_KIE_EXTRA_CONFIG="${JBOSS_KIE_EXTRA_CONFIG} ${JavaParameters}"
