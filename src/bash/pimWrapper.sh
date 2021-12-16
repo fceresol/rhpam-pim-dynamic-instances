@@ -20,7 +20,7 @@ function loadKieServerConfigs()
     KieServerSvcHostEnv=${KieServerName}_KIESERVER_SERVICE_HOST
     KieServerSvcPortEnv=${KieServerName}_KIESERVER_SERVICE_PORT
     KieServerUserEnv=${KieServerName}_KIESERVER_USERNAME
-    =${KieServerName}_KIESERVER_PASSWORD
+    KieServerPwdEnv=${KieServerName}_KIESERVER_PASSWORD
 
     if [[ -z "${!KieServerSvcHostEnv}" || -z "${!KieServerSvcPortEnv}" ]] ; then
         log_error "the service-related envs are not correctly configured, skipping ${KieServerName} configuration"
@@ -53,22 +53,22 @@ function loadKieServerConfigs()
 if [[ -z "${KIE_SERVER_IMPORT_LIST}" ]] ; then
     log_warning "no KIE_SERVER_IMPORT_LIST var specified, skipping..."
 else
-    ServerList=$((echo -n ${KIE_SERVER_IMPORT_LIST} | tr "-" "_" | tr "[a-z]" "[A-Z]"))
+    ServerList=$(echo -n ${KIE_SERVER_IMPORT_LIST} | tr "-" "_" | tr "[a-z]" "[A-Z]")
 
     if [[ "${ServerList}" =~ .*ALL.* ]]; then
 
         log_info "ALL is selected for import, retrieving kie_server list from env"
         ServerList=""
-        for server in $(env | grep "KIESERVER_SERVICE_PORT=" | awk -F "_KIESERVER_SERVICE_PORT" '{print $1}') ; do
+        for server in $(env | grep "KIESERVER_SERVICE_PORT=" | awk -F "_KIESERVER_SERVICE_PORT" '{print $1}') ; do      
             ServerList="${ServerList} ${server}"
         done
     fi
 
     KIE_SERVER_INDEX=0
     JavaParameters=""
-    for Server in ${ServerList} ; do
+    for server in ${ServerList} ; do
         log_info "adding server ${server} with id ${KIE_SERVER_INDEX}"
-        JavaParameters=${JavaParameters} $(loadKieServerConfigs ${server})
+        JavaParameters="${JavaParameters} $(loadKieServerConfigs ${server})"
         
         KIE_SERVER_INDEX=$(($KIE_SERVER_INDEX + 1))
     done
@@ -76,6 +76,6 @@ else
     log_info "Auto-configured for: ${ServerList}"
 fi
 
-export JBOSS_KIE_ARGS=${JBOSS_KIE_ARGS} ${JavaParameters}
+export JBOSS_KIE_ARGS="${JBOSS_KIE_ARGS} ${JavaParameters}"
 
 /opt/rhpam-process-migration/openshift-launch.sh
