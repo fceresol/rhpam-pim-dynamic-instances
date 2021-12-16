@@ -59,7 +59,7 @@ else
 
         log_info "ALL is selected for import, retrieving kie_server list from env"
         ServerList=""
-        for server in $(env | grep "KIESERVER_SERVICE_PORT=" | awk -F "_KIESERVER_SERVICE_PORT" '{print $1}') ; 
+        for server in $(env | grep "KIESERVER_SERVICE_PORT=" | awk -F "_KIESERVER_SERVICE_PORT" '{print $1}') ; do
             ServerList="${ServerList} ${server}"
         done
     fi
