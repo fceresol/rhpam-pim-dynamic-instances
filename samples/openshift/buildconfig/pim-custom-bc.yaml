@@ -1,0 +1,27 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: pim-custom-bc
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: pimserver-custom:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    git:
+      ref: main
+      uri: https://github.com/fceresol/rhpam-pim-dynamic-instances.git
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: src/docker/Dockerfile
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - type: ConfigChange
+
