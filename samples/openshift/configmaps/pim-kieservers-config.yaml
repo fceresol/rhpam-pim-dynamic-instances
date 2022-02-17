@@ -1,12 +1,25 @@
 apiVersion: v1
 data:
+  JBOSS_KIE_EXTRA_CLASSPATH: /opt/rhpam-process-migration/drivers/oracle-jdbc-ojdbc8.jar
   KIE_SERVER_IMPORT_LIST: all
+  LDAP_BASE_CONTEXT_DN: 'ou=people,o=SevenSeas'
+  LDAP_BASE_FILTER: '(uid={0})'
+  LDAP_BIND_CREDENTIAL: secret
+  LDAP_BIND_DN: 'uid=admin,ou=system'
+  LDAP_CONFIGURE_OVERRIDE: 'true'
+  LDAP_JAVA_NAMING_PROVIDER_URL: 'ldap://192.168.1.51:10389'
+  LDAP_ROLE_ATTRIBUTE_ID: cn
+  LDAP_ROLE_CTX_DN: 'ou=groups,o=sevenSeas'
+  LDAP_ROLE_FILTER: 'uniquemember={1}'
   RHPAM_KIESERVER1_KIESERVER_PASSWORD: kieserver_password
   RHPAM_KIESERVER1_KIESERVER_USERNAME: adminUser
   RHPAM_KIESERVER2_KIESERVER_PASSWORD: kieserver_password2
   RHPAM_KIESERVER2_KIESERVER_USERNAME: adminUser
   RHPAM_KIESERVER3_KIESERVER_PASSWORD: kieserver_password3
   RHPAM_KIESERVER3_KIESERVER_USERNAME: adminUser
+  ROLEMAPPING_PROPERTIES: |
+    adminGroup=admin
+    otherGroup=group
 kind: ConfigMap
 metadata:
   name: pim-kieservers-config

@@ -1,0 +1,13 @@
+thorntail:
+  security:
+    security-domains:
+      pim:
+        classic-authentication:
+          login-modules:
+            RoleMapping:
+              code: org.jboss.security.auth.spi.RoleMappingLoginModule
+              flag: optional
+              module-options:
+                 replaceRole: @@ROLEMAP_REPLACE_ROLE@@
+                 rolesProperties: /opt/rhpam-process-migration/config/rolemapping.properties
+                 

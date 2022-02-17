@@ -1,0 +1,28 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: pim-app
+spec:
+  commonConfig:
+    adminPassword: adminPassword
+  environment: rhpam-authoring
+  objects:
+    console:
+      replicas: 0
+    processMigration:
+      database:
+        externalConfig:
+          backgroundValidation: "true"
+          connectionChecker: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker
+          driver: oracle
+          exceptionSorter: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter
+          jdbcURL: jdbc:oracle:thin:@fceresol-P1.redhat.com:1521/db19c
+          password: pim
+          username: pim
+        type: external
+      image: pimserver-custom
+      imageTag: latest
+    servers:
+    - database:
+        type: h2
+      replicas: 0
