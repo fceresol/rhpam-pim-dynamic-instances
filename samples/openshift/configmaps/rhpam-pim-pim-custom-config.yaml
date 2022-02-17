@@ -22,4 +22,4 @@ data:
     otherGroup=group
 kind: ConfigMap
 metadata:
-  name: pim-kieservers-config
+  name: rhpam-pim-pim-custom-config
