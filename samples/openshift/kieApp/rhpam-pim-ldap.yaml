@@ -11,20 +11,29 @@ spec:
       replicas: 0
     processMigration:
       database:
-        externalConfig:
-          backgroundValidation: "true"
-          connectionChecker: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker
-          driver: oracle
-          exceptionSorter: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter
-          jdbcURL: jdbc:oracle:thin:@oracledatabase.example.com:1521/db19c
-          password: pim
-          username: pim
-        type: external
+        type: postgresql
+      image: pimserver-custom
+      imageTag: latest
       env:
-      #### KIE SERVERS CONFIGURATIONS FOR WRAPPER SCRIPT ####
+      ### LDAP CONFIGURATIONS
+      - name: QUARKUS_SECURITY_LDAP_DIR_CONTEXT_PASSWORD
+        value: secret
+      - name: QUARKUS_SECURITY_LDAP_DIR_CONTEXT_URL
+        value: ldap://my-ldap.example.com:389
+      - name: QUARKUS_SECURITY_LDAP_DIR_CONTEXT_PRINCIPAL
+        value: uid=admin,ou=system
+      - name: QUARKUS_HTTP_AUTH_POLICY_MAIN_POLICY_ROLES_ALLOWED
+        value: LDAP GROUP 01,LDAP GROUP 02
+      - name: PIM_AUTH_METHOD
+        value: ldap
+      - name: QUARKUS_SECURITY_USERS_FILE_ENABLED
+        value: "false"
+      - name: QUARKUS_SECURITY_JDBC_ENABLED
+        value: "false"
+      #### KIE SERVERS CONFIGURATIONS FOR WRAPPER SCRIPT
       - name: KIE_SERVER_IMPORT_LIST
         value: ALL
-      #### KIE SERVER ON THE SAME NAMESPACE (THE SERVICE_HOST AND SERVICE_PORT are automatically injected with their default value)
+      #### KIE SERVER ON THE SAME NAMESPACE (THE SERVICE_HOST AND SERVICE_PORT are automaticalli injected with their default value)
       - name: RHPAM_KIESERVER1_KIESERVER_PASSWORD
         value: kieserver_password
       - name: RHPAM_KIESERVER1_KIESERVER_USERNAME
@@ -42,8 +51,6 @@ spec:
         value: kieserver_password3
       - name: RHPAM_KIESERVER3_KIESERVER_USERNAME
         value: adminUser
-      image: pimserver-custom
-      imageTag: latest
     servers:
     - database:
         type: h2

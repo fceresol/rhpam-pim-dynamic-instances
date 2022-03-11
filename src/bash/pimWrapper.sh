@@ -1,48 +1,15 @@
 #!/bin/bash
 # this scripts is being provided as-is, without any form of support or warranty. 
 # You can modify to fit your needs.
-export 
+
+# CHANGELOG
+# V 1.0 - valid until rhpam 7.11.x included
+# V 2.0 - valid from rhpam 7.12.0 onwards (the PIM runtime changed from thorntail to quarkus)
+
+
 # Use the same logging as default scripts
 source ${LAUNCH_DIR}/logging.sh
 
-function setKieLDAPOverrides()
-{
-
-    cp -p /opt/rhpam-process-migration/templates/LDAPSecurity-overrides.yaml /tmp/LDAPSecurity-overrides.yaml
-
-    for LDAP_PROPERTY in LDAP_JAVA_NAMING_PROVIDER_URL LDAP_BASE_CONTEXT_DN LDAP_BIND_CREDENTIAL LDAP_BIND_DN LDAP_BASE_FILTER LDAP_ROLE_CTX_DN LDAP_ROLE_FILTER LDAP_ROLE_ATTRIBUTE_ID ; do
-        if [[ -z "${!LDAP_PROPERTY}" ]]; then
-            log_warning "${!LDAP_PROPERTY} variable is not set, skipping LDAP override configuration...."
-            return
-        fi
-        sed -i'' /tmp/LDAPSecurity-overrides.yaml -e "s#@@${LDAP_PROPERTY}@@#${!LDAP_PROPERTY}#g"
-    done
-
-    mv /tmp/LDAPSecurity-overrides.yaml /opt/rhpam-process-migration/config/
-
-    echo -Dthorntail.security.security-domains.pim.classic-authentication.login-modules.UsersRoles.flag=Sufficient -s/opt/rhpam-process-migration/config/LDAPSecurity-overrides.yaml
-
-}
-
-function setRoleMappingPropertiesOverrides()
-{
-
-    if [[ -z "${ROLEMAPPING_PROPERTIES}" ]]; then
-      log_warning "skipping rolemapping.properties configuration since rolemapping.properties is not set...."
-      return
-    fi
-
-    echo "${ROLEMAPPING_PROPERTIES}" > /opt/rhpam-process-migration/config/rolemapping.properties
-    log_info "configuring rolemapping.properties support for ldap (adding rolemapping overrides)...."
-    cp -p /opt/rhpam-process-migration/templates/RoleMapping-overrides.yaml /tmp/RoleMapping-overrides.yaml
-
-    sed -i'' /tmp/RoleMapping-overrides.yaml -e "s#@@ROLEMAP_REPLACE_ROLE@@#${ROLEMAP_REPLACE_ROLE:-"false"}#g" 
-
-    mv /tmp/RoleMapping-overrides.yaml /opt/rhpam-process-migration/config/
-
-    echo -s/opt/rhpam-process-migration/config/RoleMapping-overrides.yaml
-
-}
 
 # required vars
 # KIE_SERVER_IMPORT_LIST
@@ -85,8 +52,10 @@ function loadKieServerConfigs()
 
     KieServerPwd=${!KieServerPwdEnv}
     
-    echo -n "-Dkieservers.${KIE_SERVER_INDEX}.host=${KieServerUrl} -Dkieservers.${KIE_SERVER_INDEX}.username=${KieServerUser} -Dkieservers.${KIE_SERVER_INDEX}.password=${KieServerPwd}"
+    echo -n "-Dkieservers[${KIE_SERVER_INDEX}].host=${KieServerUrl} -Dkieservers[${KIE_SERVER_INDEX}].username=${KieServerUser} -Dkieservers[${KIE_SERVER_INDEX}].password=${KieServerPwd}"
 }
+
+JavaParameters=""
 
 if [[ -z "${KIE_SERVER_IMPORT_LIST}" ]]; then
     log_warning "no KIE_SERVER_IMPORT_LIST var specified, skipping..."
@@ -103,7 +72,7 @@ else
     fi
 
     KIE_SERVER_INDEX=0
-    JavaParameters=""
+    
     for server in ${ServerList} ; do
         log_info "adding server ${server} with id ${KIE_SERVER_INDEX}"
         JavaParameters="${JavaParameters} $(loadKieServerConfigs ${server})"
@@ -115,13 +84,11 @@ else
 
 fi
 
-if [[ -z "${LDAP_CONFIGURE_OVERRIDE}" || "${LDAP_CONFIGURE_OVERRIDE}" == "false" ]]; then
-    log_info "LDAP_CONFIGURE_OVERRIDE variable is not true, skipping LDAP override configuration...."
+if [[ -z "${JAVA_OPTS_APPEND}" ]]; then
+  export JAVA_OPTS_APPEND="${JavaParameters}"
 else
-    JavaParameters="${JavaParameters} $(setKieLDAPOverrides)"
-    JavaParameters="${JavaParameters} $(setRoleMappingPropertiesOverrides)"
+  export JAVA_OPTS_APPEND="${JavaParameters} ${JAVA_OPTS_APPEND}"
 fi
 
-export JBOSS_KIE_EXTRA_CONFIG="${JBOSS_KIE_EXTRA_CONFIG} ${JavaParameters}"
 
-/opt/rhpam-process-migration/openshift-launch.sh ${JBOSS_KIE_EXTRA_CONFIG}
+/opt/rhpam-process-migration/openshift-launch.sh    
